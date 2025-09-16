@@ -1,0 +1,20 @@
+<script>
+    function lnko(n,m)
+    {
+    if(n> m)
+        {
+            let a = n;
+            n = m;
+            m = a;
+        }
+        let maradek = n % m;
+        while (maradek > 0)
+        {
+            n = m;
+            m = maradek;
+            maradek = n % m;
+        }
+         return m;
+    }
+    console.log(lnko(10,40));
+</script>
