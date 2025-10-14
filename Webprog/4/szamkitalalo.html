@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Számkitaláló játék</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        #result { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Számkitaláló játék</h1>
+    <p>Találd ki a számot 1 és 100 között:</p>
+    <input  id="tipp"  type="number">
+    <button id="tippGomb">Tippelés</button>
+    <button id="ujJatek">Uj jatek</button>
+    <ul id="tippek">
+    </ul>
+    <script>
+        //Segedfuggveny
+        function veletlen(a,b){
+            return (Math.floor(Math.random() * b - a + 1)) + a
+            //Veletlenszam generalas a es b kozott
+        }
+        //Allapotter
+        let kitalalando = veletlen(1,100)
+        let tippek = [] // tippek tombje
+        let vege = false
+
+        function tippel (tippeltszam){
+            tippek.push(tippeltszam)
+            vege = tippeltszam === kitalalando
+            // tippek tombbe belerakja a tippelt szamot
+        }
+        //Esemenykezelo fuggvenyek
+        const input = document.querySelector('#tipp')
+        const gomb = document.querySelector('#tippGomb')
+        const ul = document.querySelector('#tippek')
+        const uj = document.querySelector('#ujJatek')
+
+
+        //Enter lenyomasos tippeles
+        input.addEventListener('keydown', enter)
+        function enter (e) { 
+            if (e.key ==='Enter') {
+                tippeles();
+            }
+        }
+
+        // uj jatek  gomb letrehozasa
+
+        uj.addEventListener('click', ujJatek)
+        function ujJatek (e){
+            kitalalando = veletlen(1,100)
+            vege = false;
+            ul.innerHTML = ''
+            tippek.length = 0;
+            input.value = ''
+            input.disabled = false;
+            gomb.disabled = false;
+        }
+
+        gomb.addEventListener('click', tippeles)
+        function tippeles (e) {
+            //beolvasas
+            const szam = input.valueAsNumber // parseInt egy masik opcio
+            //feldolgozas
+            tippel(szam)
+            //kiiras
+            /*imperativ kiiras
+            const li = `<li>${szam}</li>`
+            ul.innerHTML = ul.innerHTML + li
+            */
+           //deklarativ
+           ul.innerHTML = genLista()
+           //imperativ
+           input.disabled = vege
+           gomb.disabled = vege
+           input.value = ''
+
+        }    
+
+        //HTML generalo
+        function genLista() {
+            return tippek.map(szam => `<li>${szam} (${hasonlit(szam)})</li>`).join('')
+            /*             
+            `<li>50 (nagyobb)</li>
+            <li>75 (kisebb)</li>
+            <li>70 (egyenlo)</li>` 
+            */
+        }
+        function hasonlit(szam){
+            if (szam < kitalalando) return 'nagyobb'
+            if (szam > kitalalando) return 'kisebb'
+            return 'egyenlo'
+        }
+        // lehessen tippelni csak  az enter lenyomasaval, es torolje az elozo  bementet amikor tippeltem
+        // kesz xd, nem tudom hova fejleszthetem  ezt tovabb
+        
+    </script>
+</body>
+</html>

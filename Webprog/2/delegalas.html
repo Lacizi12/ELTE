@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+    .kesz:before{
+        content: "Y";
+    }</style>
+    <ul class="lista">
+        <li>Elso</li>
+        <li>Masodik</li>
+        <li>Harmadik</li>
+    </ul>
+    <script>
+        const  ul = document.querySelector('ul.lista')
+        ul.addEventListener('click', kattintas);
+        function kattintas (e)
+        {
+            if (e.target.matches('li')) { // Csak  lista elemekre tortenik meg a delegalas
+                e.target.classList.toggle('kesz') // a classlistjahoz hozzaadja a kesz osztalyt
+        
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<script>
+    const filmek = [{
+        cim: "filmcim1",
+        hossz: 120,
+        rendezoi :["rendeyo 1", "rendezo 2"],
+        szereplok: [{
+            nev: "Szereplonev 1",
+            szerep : "Szerep1"
+        }]
+    },
+    {
+        cim: "filmcim2",
+        hossz: 90,
+        rendezoi :["rendeyo 3", "rendezo 4"],
+        szereplok: [{
+            nev: "Szereplonev 1",
+            szerep : "Szerep1" 
+    }]
+}];
+
+filmek.forEach(film => {
+    if (film.rendezoi.length > 1)
+    {
+    console.log(film.cim);
+    }
+});
+
+</script>

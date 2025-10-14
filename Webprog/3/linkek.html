@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<p>
+    <a id="link1" href="https://inf.elte.hu/"> ELTE Informatikai  kar</a> <br>
+    <a href="https://elte.hu/" class="tiltott"> ELTE</a> <br>
+    <a href="https://inf.elte.hu/"> ELTE Informatikai  kar</a> <br>
+    <a href="https://Webprogramozas.inf.elte.hu/"> ELTE Webprogramozas</a> <br>   
+</p>
+<p>
+    <a href="https://inf.elte.hu/"> ELTE Informatikai  kar</a> <br>
+    <a href="https://elte.hu/"> ELTE</a> <br>
+    <a href="https://inf.elte.hu/"  class="tiltott"> ELTE Informatikai  kar</a> <br>
+    <a href="https://Webprogramozas.inf.elte.hu/"> ELTE Webprogramozas</a> <br>   
+</p> 
+<script>
+document.addEventListener('click', kattintas)
+function kattintas(e)
+{ 
+    if (e.target.matches('a.tiltott')){ // Csak  a tiltott classt nem fogja megnyitni
+    e.preventDefault()
+    }
+}
+    /*
+const link1 = document.querySelector('#link1')
+link1.addEventListener('click', kattintas);
+function kattintas(e)
+{ // link1-nek  a megnyitasat tiltja
+    console.log(this) // a this ahhoz kapcsolodik amihez a link 1 kapcsolodik
+    // ha az e.target lenne a helyen, akkor az kapcsolodna ami  az esemenyt eredetileg kivaltotta
+
+
+    e.preventDefault()
+}
+*/
+</script>
+</body>
+</html>
