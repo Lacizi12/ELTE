@@ -1,0 +1,339 @@
+/* ================================== */
+/* === Alap Beállítások === */
+/* ================================== */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f8f8f8;
+}
+
+body.menu-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* ================================== */
+/* === Főmenü (index.html) === */
+/* ================================== */
+
+.menu-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.menu-box {
+  background-color: #f0f0f0;
+  padding: 40px 150px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.menu-box h1 {
+  color: #4b006e;
+  font-size: 50px;
+  margin-bottom: 30px;
+}
+
+.input-group {
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  color: #4b006e;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #4b006e;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+  border-color: #5e008b;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button-group button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#start-game-btn {
+  background-color: #4b006e;
+  color: #ffffff;
+  border: none;
+}
+
+#start-game-btn:hover {
+  background-color: #5e008b;
+  transform: scale(1.05);
+}
+
+#rules-btn {
+  background-color: transparent;
+  color: #4b006e;
+  border: 2px solid #4b006e;
+}
+
+#rules-btn:hover {
+  background-color: #4b006e;
+  color: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .menu-box {
+    padding: 30px 25px;
+    width: 90%;
+  }
+}
+
+/* ================================== */
+/* === Szabályok Oldal (rules.html) === */
+/* ================================== */
+
+.rules-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 20px 30px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.rules-container h1 {
+  text-align: center;
+  color: #333;
+}
+
+.rules-container h2 {
+  color: #4b006e;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 5px;
+  margin-top: 25px;
+}
+
+.rules-container ul {
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
+.rules-container li {
+  margin-bottom: 10px;
+}
+
+.rules-container a {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #4b006e;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.rules-container a:hover {
+  background-color: #5e008b;
+}
+
+/* ================================== */
+/* === Játék Oldal (game.html) === */
+/* ================================== */
+
+body.game-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  height: auto;
+}
+
+/* Felső sáv */
+.game-header {
+  background-color: #4b006e;
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.header-info {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.header-info span {
+  font-weight: normal;
+  margin-left: 5px;
+}
+
+/* Fő tartalom */
+.game-container {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Bal oldal - Tábla */
+.board-container {
+  flex-shrink: 0;
+}
+
+#game-canvas {
+  background-color: white;
+  border: 3px solid #4b006e;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+/* Jobb oldal - UI Panel */
+.ui-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 250px;
+  max-width: 300px;
+}
+
+.ui-box {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ui-box h3 {
+  margin: 0 0 10px 0;
+  color: #4b006e;
+  font-size: 18px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 5px;
+}
+
+.ui-box p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* Kártya megjelenítő */
+.card-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+  background-color: #f0f0f0;
+  border: 3px solid #4b006e;
+  border-radius: 10px;
+  font-size: 64px;
+  font-weight: bold;
+  color: #4b006e;
+}
+
+/* Fordulósorrend */
+.turn-order {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.turn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.turn-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Pontozás slider */
+.train-slider {
+  height: 30px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  margin: 10px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.train-slider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  background-color: #4b006e;
+  transition: width 0.3s ease;
+}
+
+/* Reszponzív design */
+@media (max-width: 1200px) {
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ui-panel {
+    width: 100%;
+    max-width: 600px;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .ui-box {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .game-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  #game-canvas {
+    width: 100%;
+    height: auto;
+  }
+
+  .ui-panel {
+    flex-direction: column;
+  }
+}

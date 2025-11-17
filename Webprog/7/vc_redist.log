@@ -1,0 +1,63 @@
+[2BD8:299C][2025-10-22T08:27:18]i001: Burn v3.14.1.8722, Windows v10.0 (Build 26100: Service Pack 0), path: C:\Users\Laciz\AppData\Local\Temp\{F689170C-4FC7-4843-8504-949D0491AD9B}\.cr\vc_redist.exe
+[2BD8:299C][2025-10-22T08:27:18]i009: Command Line: '"-burn.clean.room=C:\Users\Laciz\Downloads\PhpComposerInstaller (1)\PhpComposerInstallerDownloads\vc_redist.exe" -burn.filehandle.attached=640 -burn.filehandle.self=796 /install /passive /quiet /norestart /log vc_redist.log'
+[2BD8:299C][2025-10-22T08:27:18]i000: Setting string variable 'WixBundleOriginalSource' to value 'C:\Users\Laciz\Downloads\PhpComposerInstaller (1)\PhpComposerInstallerDownloads\vc_redist.exe'
+[2BD8:299C][2025-10-22T08:27:18]i000: Setting string variable 'WixBundleOriginalSourceFolder' to value 'C:\Users\Laciz\Downloads\PhpComposerInstaller (1)\PhpComposerInstallerDownloads\'
+[2BD8:299C][2025-10-22T08:27:18]i000: Setting string variable 'WixBundleLog' to value 'C:\Users\Laciz\Downloads\PhpComposerInstaller (1)\vc_redist.log'
+[2BD8:299C][2025-10-22T08:27:19]i000: Setting string variable 'WixBundleName' to value 'Microsoft Visual C++ 2015-2019 Redistributable (x64) - 14.29.30156'
+[2BD8:299C][2025-10-22T08:27:19]i000: Setting string variable 'WixBundleManufacturer' to value 'Microsoft Corporation'
+[2BD8:1F48][2025-10-22T08:27:19]i000: Setting version variable 'WixBundleFileVersion' to value '14.29.30156.0'
+[2BD8:299C][2025-10-22T08:27:20]i100: Detect begin, 11 packages
+[2BD8:299C][2025-10-22T08:27:20]i000: Setting string variable 'Arm64_Check' to value 'AMD64'
+[2BD8:299C][2025-10-22T08:27:20]i000: Setting version variable 'windows_uCRT_DetectKey' to value '10.0.26100.3624'
+[2BD8:299C][2025-10-22T08:27:20]i000: Setting numeric variable 'windows_uCRT_DetectKeyExists' to value 1
+[2BD8:299C][2025-10-22T08:27:20]i102: Detected related bundle: {804e7d66-ccc2-4c12-84ba-476da31d103d}, type: Upgrade, scope: PerMachine, version: 14.42.34433.0, operation: Downgrade
+[2BD8:299C][2025-10-22T08:27:20]i052: Condition '(VersionNT = v6.3 AND NOT VersionNT64) AND (windows_uCRT_DetectKeyExists AND windows_uCRT_DetectKey >= v10.0.10240.0)' evaluates to false.
+[2BD8:299C][2025-10-22T08:27:20]i052: Condition '(VersionNT = v6.3 AND VersionNT64) AND (windows_uCRT_DetectKeyExists AND windows_uCRT_DetectKey >= v10.0.10240.0)' evaluates to false.
+[2BD8:299C][2025-10-22T08:27:20]i052: Condition '(VersionNT = v6.2 AND NOT VersionNT64) AND (windows_uCRT_DetectKeyExists AND windows_uCRT_DetectKey >= v10.0.10240.0)' evaluates to false.
+[2BD8:299C][2025-10-22T08:27:20]i052: Condition '(VersionNT = v6.2 AND VersionNT64) AND (windows_uCRT_DetectKeyExists AND windows_uCRT_DetectKey >= v10.0.10240.0)' evaluates to false.
+[2BD8:299C][2025-10-22T08:27:20]i052: Condition '(VersionNT = v6.1 AND NOT VersionNT64) AND (windows_uCRT_DetectKeyExists AND windows_uCRT_DetectKey >= v10.0.10240.0)' evaluates to false.
+[2BD8:299C][2025-10-22T08:27:20]i052: Condition '(VersionNT = v6.1 AND VersionNT64) AND (windows_uCRT_DetectKeyExists AND windows_uCRT_DetectKey >= v10.0.10240.0)' evaluates to false.
+[2BD8:299C][2025-10-22T08:27:20]i052: Condition '(VersionNT = v6.0 AND NOT VersionNT64) AND (windows_uCRT_DetectKeyExists AND windows_uCRT_DetectKey >= v10.0.10240.0)' evaluates to false.
+[2BD8:299C][2025-10-22T08:27:20]i052: Condition '(VersionNT = v6.0 AND VersionNT64) AND (windows_uCRT_DetectKeyExists AND windows_uCRT_DetectKey >= v10.0.10240.0)' evaluates to false.
+[2BD8:299C][2025-10-22T08:27:20]i108: Detected compatible package: vcRuntimeMinimum_x64, provider: Microsoft.VS.VC_RuntimeMinimumVSU_amd64,v14, installed: {382F1166-A409-4C5B-9B1E-85ED538B8291}, version: 14.42.34433, chained: {0347A0B2-4FD4-48D7-99DE-E13EC09A6A91}
+[2BD8:299C][2025-10-22T08:27:20]i103: Detected related package: {382F1166-A409-4C5B-9B1E-85ED538B8291}, scope: PerMachine, version: 14.42.34433.0, language: 0 operation: Downgrade
+[2BD8:299C][2025-10-22T08:27:20]i108: Detected compatible package: vcRuntimeAdditional_x64, provider: Microsoft.VS.VC_RuntimeAdditionalVSU_amd64,v14, installed: {E1902FC6-C423-4719-AB8A-AC7B2694B367}, version: 14.42.34433, chained: {CEC3A75F-5C54-4BAF-ABED-5CD9F7742999}
+[2BD8:299C][2025-10-22T08:27:20]i103: Detected related package: {E1902FC6-C423-4719-AB8A-AC7B2694B367}, scope: PerMachine, version: 14.42.34433.0, language: 0 operation: Downgrade
+[2BD8:299C][2025-10-22T08:27:20]i108: Detected compatible package: vcRuntime_arm64, provider: Microsoft.VS.VC_RuntimeMinimumVSU_amd64,v14, installed: {382F1166-A409-4C5B-9B1E-85ED538B8291}, version: 14.42.34433, chained: {DC7F3DAC-D419-49BD-B03F-FB6E2C8BDC20}
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: Windows81_x86, state: Absent, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: Windows81_x64, state: Absent, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: Windows8_x86, state: Absent, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: Windows8_x64, state: Absent, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: Windows7_MSU_x86, state: Absent, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: Windows7_MSU_x64, state: Absent, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: WindowsVista_MSU_x86, state: Absent, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: WindowsVista_MSU_x64, state: Absent, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: vcRuntimeMinimum_x64, state: Obsolete, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: vcRuntimeAdditional_x64, state: Obsolete, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i101: Detected package: vcRuntime_arm64, state: Absent, cached: None
+[2BD8:299C][2025-10-22T08:27:20]i052: Condition 'VersionNT64 >= v6.0 OR (VersionNT64 = v5.2 AND ServicePackLevel >= 1)' evaluates to true.
+[2BD8:299C][2025-10-22T08:27:20]i199: Detect complete, result: 0x0
+[2BD8:1F48][2025-10-22T08:27:20]e000: Error 0x80070666: Cannot install a product when a newer version is installed.
+[2BD8:299C][2025-10-22T08:27:20]i500: Shutting down, exit code: 0x666
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: Arm64_Check = AMD64
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: SystemFolder = C:\WINDOWS\SysWOW64\
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: VersionNT = 10.0.0.0
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: VersionNT64 = 10.0.0.0
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: windows_uCRT_DetectKey = 10.0.26100.3624
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: windows_uCRT_DetectKeyExists = 1
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleAction = 5
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleElevated = 0
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleFileVersion = 14.29.30156.0
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleInstalled = 0
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleLog = C:\Users\Laciz\Downloads\PhpComposerInstaller (1)\vc_redist.log
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleManufacturer = Microsoft Corporation
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleName = Microsoft Visual C++ 2015-2019 Redistributable (x64) - 14.29.30156
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleOriginalSource = C:\Users\Laciz\Downloads\PhpComposerInstaller (1)\PhpComposerInstallerDownloads\vc_redist.exe
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleOriginalSourceFolder = C:\Users\Laciz\Downloads\PhpComposerInstaller (1)\PhpComposerInstallerDownloads\
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleProviderKey = VC,redist.x64,amd64,14.29,bundle
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleSourceProcessFolder = C:\Users\Laciz\Downloads\PhpComposerInstaller (1)\PhpComposerInstallerDownloads\
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleSourceProcessPath = C:\Users\Laciz\Downloads\PhpComposerInstaller (1)\PhpComposerInstallerDownloads\vc_redist.exe
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleTag = 
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleUILevel = 2
+[2BD8:299C][2025-10-22T08:27:20]i410: Variable: WixBundleVersion = 14.29.30156.0
+[2BD8:299C][2025-10-22T08:27:20]i007: Exit code: 0x666, restarting: No

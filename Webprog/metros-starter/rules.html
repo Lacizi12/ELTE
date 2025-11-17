@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Játékszabály - Budapest Metrói</title>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main class="rules-container">
+        <h1>Játékszabályok</h1>
+
+        <h2>Áttekintés</h2>
+        <p>
+            A fordulók sorrendjét véletlenszerűen kisorsoljuk, ezt követően pedig el is indul az első forduló. A példa kedvéért most az M1/sárga metróvonalat fogjuk építeni.
+        </p>
+        <p>
+            Felfordítunk egy kártyát a megállóhely kártyák paklijából, amin A, B, C, D betű vagy Joker szimbólum szerepel (esetleg váltó szimbólum, ez extra feladat, később írunk róla), ezt követően pedig berajzolhatunk egy szakaszt - de ezt milyen megkötések szabályozzák?
+        </p>
+
+        <h2>A Szakaszépítés Szabályai</h2>
+        <ul>
+            <li>Egy szakasz berajzolása <strong>mindig opcionális</strong>. Ha nem tudsz vagy nem akarsz szakaszt rajzolni, nyugodtan húzd fel a következő megállóhely kártyát.</li>
+            <li>Minden szakasz, amit megrajzolsz, csakis egy <strong>egyenes vonal</strong> lehet, ami vízszintesen, függőlegesen (vagy haladó feladattal 45 fokban átlósan) halad.</li>
+            <li>Egy fordulóban az <strong>elsőként</strong> megrajzolt szakasz az aktuális metróvonal <strong>kiinduló-megállóhelyéről indul</strong> ki, és egy olyan betűvel jelölt megállóhelyen kell véget érnie, ami felfordított megállóhely kártyán látható.</li>
+            <li>Ezután minden szakasznak a metróvonalad <strong>egyik végéből kell kiindulnia</strong> (kivétel: váltókártya), és egy olyan betűvel jelölt megállóhelyen kell véget érnie, amilyen a felfordított megállóhely kártyán szerepel (kivétel: Jokerek). Tehát a fordulóban az első berajzolást követően nincs további kiemelt szerepe a kiinduló-megállóhelynek; és más metróvonal kiinduló-megállóhelyére ugyanúgy húzhatsz be szakaszt, mintha sima megállóhely lenne.</li>
+            <li>Minden szakasznak <strong>két megállóhelyet</strong> kell összekötnie.</li>
+            <li>Szakasz <strong>nem haladhat keresztül</strong> egy harmadik megállóhelyen (amelyik se nem a kiinduló, se nem a cél megállóhely ennél a rajzolásnál).</li>
+            <li>Szakasz <strong>nem keresztezhet másik szakaszt</strong> a nyílt pályán, csak megállóhelyen; de egy metróvonal nem csatlakozhat be ismét egy olyan megállóhelybe, amin egyszer már keresztülment (kivétel: váltókártya); azonban olyan megállóhelybe behúzhatjuk, ahol már másik metróvonal áthalad, ekkor ez egy forgalmas csomópont lesz.</li>
+            <li>Nem rajzolhatsz több, mint egy szakaszt két megállóhely közé (nincsenek párhuzamos szakaszok), sem azonos metróvonalra, sem különbözőre.</li>
+            <li>A Deák tér <strong>Jokerként</strong> funkcionál. Bármilyen kártyát is fordítottunk fel, ha a többi szabály teljesül, ide behúzhatjuk a szakaszt betűjeltől függetlenül.</li>
+        </ul>
+
+        <hr>
+        
+        <a href="index.html">Vissza a Főmenübe</a>
+    </main>
+
+</body>
+</html>
