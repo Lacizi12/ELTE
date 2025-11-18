@@ -8,20 +8,23 @@
 </head>
 <body class="game-page">
 
-    <!-- 1. FELSŐ SÁV: Információk -->
+    <!-- FELSŐ SÁV -->
     <header class="game-header">
-        <div class="header-info">
-            Játékos: <span id="player-name-display">...</span>
+        <div class="header-group">
+            <span class="label">Játékos:</span>
+            <span id="player-name-display" class="value">...</span>
         </div>
-        <div class="header-info">
-            Aktuális Vonal: <span id="current-line-display" style="color: yellow;">M1</span>
+        <div class="header-group">
+            <span class="label">Aktuális Vonal:</span>
+            <span id="current-line-display" class="value line-indicator">M1</span>
         </div>
-        <div class="header-info">
-            Eltelt idő: <span id="timer-display">00:00</span>
+        <div class="header-group">
+            <span class="label">Eltelt idő:</span>
+            <span id="timer-display" class="value">00:00</span>
         </div>
     </header>
 
-    <!-- 2. FŐ TARTALOM: A játék -->
+    <!-- FŐ TARTALOM -->
     <main class="game-container">
         
         <!-- BAL OLDAL: A térkép -->
@@ -31,37 +34,43 @@
 
         <!-- JOBB OLDAL: Kezelőpanel -->
         <aside class="ui-panel">
-            <div class="ui-box">
+            
+            <div class="ui-box card-box" >
                 <h3>Felfordított kártya</h3>
-                <div id="card-display" class="card-placeholder">
-                    <span>A</span>
+                <div class="card-visual">
+                    <div class="metro-door left"></div>
+                    <div id="card-display" class="card-content">A</div>
+                    <div class="metro-door right"></div>
                 </div>
+                <button id="skip-btn" class="action-btn">Kártya eldobása (Passz)</button>
             </div>
 
+            <!-- 2. Fordulók -->
             <div class="ui-box">
-                <h3>Fordulók</h3>
-                <!-- Ide kerülhetnek a soron következő vonalak ikonjai -->
+                <h3>Következő Vonalak</h3>
                 <div id="turn-order-display" class="turn-order">
-                    <div class="turn-icon" style="background-color: yellow;"></div>
-                    <div class="turn-icon" style="background-color: red;"></div>
-                    <div class="turn-icon" style="background-color: blue;"></div>
-                    <div class="turn-icon" style="background-color: green;"></div>
+                    <!-- A JS tölti fel -->
                 </div>
             </div>
 
-            <div class="ui-box">
+            <!-- 3. Pontozás -->
+            <div class="ui-box score-box">
                 <h3>Pontozás</h3>
-                <p>Pályaudvarok (PP): <span id="train-score-display">0</span></p>
-                <div id="train-score-slider" class="train-slider">
-                    <!-- A "csúszkát" ide generálhatod JS-sel -->
+                <div class="score-row">
+                    <span>Pályaudvarok (PP):</span>
+                    <span id="train-score-display" class="score-value">0</span>
                 </div>
-                <p>Összpontszám: <span id="total-score-display">0</span></p>
+                <div id="train-score-slider" class="train-slider"></div>
+                <hr>
+                <div class="score-row total">
+                    <span>Összpontszám:</span>
+                    <span id="total-score-display">0</span>
+                </div>
             </div>
         </aside>
 
     </main>
 
-    <!-- A játék logikája -->
     <script src="game.js"></script>
 </body>
 </html>

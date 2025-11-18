@@ -7,6 +7,7 @@ const currentLineDisplay = document.querySelector("#current-line-display");
 const timerDisplay = document.querySelector("#timer-display");
 
 const cardDisplay = document.querySelector("#card-display");
+const skipButton = document.querySelector("#skip-btn");
 const turnOrderDisplay = document.querySelector("#turn-order-display");
 const trainScoreDisplay = document.querySelector("#train-score-display");
 const totalScoreDisplay = document.querySelector("#total-score-display");
@@ -33,7 +34,7 @@ let gameState = {
 
     drawnSegments: [],
     
-    currentLineEndpoints: [], // Ez a lista tárolja, honnan folytathatod (a "kukac feje")
+    currentLineEndpoints: [], 
     
     scores: {
         train: 0,
@@ -82,41 +83,36 @@ function startGame() {
 function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    drawGrid();       // 1. Háttér minta
-    drawRiver();      // 2. Duna (A TE KÓDODDAL)
-    drawSegments();   // 3. Vonalak (állomások alatt!)
-    drawStations();   // 4. Állomások (legfelül)
+    drawGrid();       
+    drawRiver();      
+    drawSegments();   
+    drawStations();   
     
     drawSelectionIndicator();
 }
 
 function drawGrid() {
-    // 1. Szürke alap
     ctx.fillStyle = "#ebebeb"; 
     ctx.fillRect(0, 0, BOARD_SIZE, BOARD_SIZE);
 
-    ctx.strokeStyle = "#ffffff"; // Fehér rácsvonalak a mintához
+    ctx.strokeStyle = "#ffffff"; 
     ctx.lineWidth = 3; 
 
-    // 2. Átlós "X" minta minden cellában
     ctx.beginPath();
     for (let row = 0; row < GRID_SIZE; row++) {
         for (let col = 0; col < GRID_SIZE; col++) {
             const x = col * CELL_SIZE;
             const y = row * CELL_SIZE;
             
-            // Bal-felső -> Jobb-alsó
             ctx.moveTo(x, y);
             ctx.lineTo(x + CELL_SIZE, y + CELL_SIZE);
             
-            // Jobb-felső -> Bal-alsó
             ctx.moveTo(x + CELL_SIZE, y);
             ctx.lineTo(x, y + CELL_SIZE);
         }
     }
     ctx.stroke();
 
-    // 3. Négyzetrács (Cellák határai)
     ctx.beginPath();
     for (let i = 0; i <= GRID_SIZE; i++) {
         ctx.moveTo(0, i * CELL_SIZE);
@@ -128,7 +124,6 @@ function drawGrid() {
     ctx.stroke();
 }
 
-// A TE KÓDOD BEILLESZTVE:
 function drawRiver() {
     ctx.beginPath();
     ctx.moveTo(6 * CELL_SIZE, 0);
@@ -262,7 +257,6 @@ function startTurn() {
     const startStation = gameState.stations.find(s => s.id === currentLine.start);
     if (!startStation) return;
 
-    // --- ITT ÁLLÍTJUK BE A KEZDŐPONTOT (A "Kukac" feje) ---
     gameState.currentLineEndpoints = [{ x: startStation.x, y: startStation.y }];
     
     gameState.turnCounter = 0;
@@ -305,6 +299,13 @@ function drawCard() {
 
 canvas.addEventListener('click', handleCanvasClick);
 
+skipButton.addEventListener('click', () => {
+    console.log("Kártya passzolva!");
+    selectedStartStation = null;
+    drawGame();
+    drawCard();
+});
+
 function handleCanvasClick(event) {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -331,29 +332,28 @@ function handleCanvasClick(event) {
 }
 
 function validateAndDrawLine(startStation, endStation) {
-    console.log("Vonal ellenőrzése:", startStation.id, "->", endStation.id);
-
-    // 1. SZABÁLY: Nem húzhatsz vonalat önmagába
+    // 1. SZABÁLY: Nem önmagába
     if (startStation.id === endStation.id) return;
 
-    // 2. SZABÁLY: A "Kukac" szabály - Csak a vonal végéről indulhat!
+    // 2. SZABÁLY: Vonal vége
     const isEndpoint = gameState.currentLineEndpoints.find(
         p => p.x === startStation.x && p.y === startStation.y
     );
     if (!isEndpoint) {
-        console.warn("HIBA: A kezdő állomás nem a vonal vége!");
         alert("Csak a vonal végéről folytathatod!");
         drawGame();
         return;
     }
 
-    // 3. SZABÁLY: Egyenes vonal (45/90 fok)
-    const dx = Math.abs(startStation.x - endStation.x);
-    const dy = Math.abs(startStation.y - endStation.y);
+    // 3. SZABÁLY: Egyenes vonal
+    const dx = startStation.x - endStation.x;
+    const dy = startStation.y - endStation.y;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
     
-    const isStraight = (dx === 0 && dy > 0) || 
-                       (dy === 0 && dx > 0) || 
-                       (dx === dy && dx > 0);
+    const isStraight = (absDx === 0 && absDy > 0) || 
+                       (absDy === 0 && absDx > 0) || 
+                       (absDx === absDy && absDx > 0);
                        
     if (!isStraight) {
         console.warn("Nem egyenes vonal!");
@@ -361,13 +361,57 @@ function validateAndDrawLine(startStation, endStation) {
         return;
     }
 
-    // 4. SZABÁLY: Kártya egyezés
+    // 4. SZABÁLY: Kártya
     const card = gameState.currentCard;
     const isCardValid = (card === 'Joker') || (endStation.type === '?') || (endStation.type === card);
     
     if (!isCardValid) {
-        console.warn(`HIBA: A kártya (${card}) nem egyezik az állomással (${endStation.type})!`);
         alert(`Rossz állomás! A kártya: ${card}, te erre kattintottál: ${endStation.type}`);
+        drawGame();
+        return;
+    }
+
+    // 5. SZABÁLY: Köztes állomás
+    const steps = Math.max(absDx, absDy); 
+    const stepX = (endStation.x - startStation.x) / steps;
+    const stepY = (endStation.y - startStation.y) / steps;
+
+    for (let i = 1; i < steps; i++) {
+        const checkX = startStation.x + i * stepX;
+        const checkY = startStation.y + i * stepY;
+        
+        if (getStationAt(checkX, checkY)) {
+            alert("HIBA: Nem haladhatsz át más állomáson!");
+            drawGame();
+            return;
+        }
+    }
+
+    // 6. SZABÁLY (ÚJ): Kereszteződés ellenőrzése
+    // Nem lehet párhuzamos vonal ugyanott, és nem metszhet más vonalat a nyílt pályán.
+    
+    // Először nézzük meg, van-e már ilyen vonal (duplikáció)
+    const isDuplicate = gameState.drawnSegments.some(seg => 
+        (seg.from.x === startStation.x && seg.from.y === startStation.y && seg.to.x === endStation.x && seg.to.y === endStation.y) ||
+        (seg.from.x === endStation.x && seg.from.y === endStation.y && seg.to.x === startStation.x && seg.to.y === startStation.y)
+    );
+    if (isDuplicate) {
+        alert("Itt már van vonal!");
+        drawGame();
+        return;
+    }
+
+    // Most nézzük a metszést
+    const hasIntersection = gameState.drawnSegments.some(seg => 
+        doSegmentsIntersect(
+            {x: startStation.x, y: startStation.y}, 
+            {x: endStation.x, y: endStation.y}, 
+            seg.from, 
+            seg.to
+        )
+    );
+    if (hasIntersection) {
+        alert("HIBA: A vonalak nem keresztezhetik egymást a nyílt pályán!");
         drawGame();
         return;
     }
@@ -376,20 +420,23 @@ function validateAndDrawLine(startStation, endStation) {
 
     const currentLineId = gameState.lineOrder[gameState.currentLineIndex];
     
-    // 1. Mentés
     gameState.drawnSegments.push({ 
         line: currentLineId, 
         from: { x: startStation.x, y: startStation.y }, 
         to: { x: endStation.x, y: endStation.y } 
     });
     
-    // 2. FRISSÍTÉS: A régi végpontot kivesszük, az újat betesszük
-    gameState.currentLineEndpoints = gameState.currentLineEndpoints.filter(
-        p => p.x !== startStation.x || p.y !== startStation.y
-    );
+    const segmentsForThisLine = gameState.drawnSegments.filter(s => s.line === currentLineId);
+    const isFirstSegment = segmentsForThisLine.length === 1;
+
+    if (!isFirstSegment) {
+        gameState.currentLineEndpoints = gameState.currentLineEndpoints.filter(
+            p => p.x !== startStation.x || p.y !== startStation.y
+        );
+    }
+
     gameState.currentLineEndpoints.push({ x: endStation.x, y: endStation.y });
 
-    // 3. Újrarajzolás és új kártya
     drawGame();
     drawCard();
 }
@@ -404,6 +451,35 @@ function getStationAt(x, y) {
 function getLineColor(lineId) {
     const line = gameState.lines.find(l => l.id === lineId);
     return line ? line.color : "#000";
+}
+
+// Matematikai segédfüggvény a metszésvizsgálathoz (CCW algoritmus)
+function ccw(a, b, c) {
+    return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+}
+
+function doSegmentsIntersect(p1, p2, p3, p4) {
+    // p1-p2 az új szakasz, p3-p4 egy régi szakasz
+    
+    // Ha van közös végpontjuk, az NEM hiba (állomáson találkoznak), kivéve ha ugyanaz a vonal (párhuzamos), de azt már szűrtük.
+    if ((p1.x === p3.x && p1.y === p3.y) || (p1.x === p4.x && p1.y === p4.y) ||
+        (p2.x === p3.x && p2.y === p3.y) || (p2.x === p4.x && p2.y === p4.y)) {
+        return false;
+    }
+
+    const d1 = ccw(p3, p4, p1);
+    const d2 = ccw(p3, p4, p2);
+    const d3 = ccw(p1, p2, p3);
+    const d4 = ccw(p1, p2, p4);
+
+    // Ha mindkét szorzás negatív, akkor a szakaszok "keresztben" vannak egymáshoz képest
+    // Ez a "szigorú" metszés esete (valódi X alak)
+    if (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) &&
+        ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0))) {
+        return true;
+    }
+
+    return false;
 }
 
 function startTimer() {
