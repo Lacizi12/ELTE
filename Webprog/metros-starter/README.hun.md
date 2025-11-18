@@ -26,7 +26,7 @@ Jelöld [X]-szel a teljesített feladatokat! Emlékeztető: a minimálisan telje
 **- Játék**
   - [X] A játéktéren megjelenik a játékos neve, és egy másodpercenként frissülő időmérő, és hogy melyik az aktuális metróvonal (név/szín), amit építünk.
   - [X] A játéktéren kirajzolódik a tábla és a megállóhelyek.
-  - [ ] Két megállóhely közé szakasz húzható a négyzetrács szabályainak betartásával (90 vagy 45 fok).
+  - [X] Két megállóhely közé szakasz húzható a négyzetrács szabályainak betartásával (90 vagy 45 fok).
 
 ### Alap feladatok (12 pont)
 
