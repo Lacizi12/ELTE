@@ -6,7 +6,7 @@ import module org.junit.jupiter;
 @BeforeAll
 public static void init() {
     // usedLang = Lang.EN; // uncomment to enforce the message language
-    Use.theClass("magic.Soliloquy")
+    Use.theClass("file.line.SumChecker")
        .that(hasUsualModifiers());
 }
 
@@ -24,17 +24,10 @@ public void methodMain() {
 }
 
 @Test
-public void methodReciteIncantations() {
-    it.hasMethod("reciteIncantations", withParams("inc1: magic.library.Incantation", "inc2: magic.library.Incantation", "idx: int", "startWithAppend: boolean"))
-      .thatIs(USABLE_WITHOUT_INSTANCE, FULLY_IMPLEMENTED, MODIFIABLE, VISIBLE_TO_ALL)
-      .thatReturnsNothing();
-}
-
-@Test
-public void methodPrintStatus() {
-    it.hasMethod("printStatus", withParams("result: boolean", "inc1: magic.library.Incantation", "inc2: magic.library.Incantation"))
+public void methodGetNumbers() {
+    it.hasMethod("getNumbers", withParams("numsTxt: String"))
       .thatIs(USABLE_WITHOUT_INSTANCE, FULLY_IMPLEMENTED, MODIFIABLE, VISIBLE_TO_NONE)
-      .thatReturnsNothing();
+      .thatReturns("array of int");
 }
 
 void main() {}

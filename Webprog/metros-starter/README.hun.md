@@ -31,32 +31,32 @@ Jelöld [X]-szel a teljesített feladatokat! Emlékeztető: a minimálisan telje
 ### Alap feladatok (12 pont)
 
 - **Kártyák (1,5 pont)**
-  - [ ] 0,5 pont: Véletlenszerű megállóhely kártyát húzhatunk a pakliból (ez tartalmazza azt is, hogy rajzolás nélkül is húzhatunk következőt).
-  - [ ] 0,5 pont: A pakliban csak a megadott számú kártya található (A-B-C-D-Joker középső és A-B-C-D-Joker szélső megállóra).
-  - [ ] 0,5 pont: A Joker kártya megfelelően működik.
+  - [X] 0,5 pont: Véletlenszerű megállóhely kártyát húzhatunk a pakliból (ez tartalmazza azt is, hogy rajzolás nélkül is húzhatunk következőt).
+  - [X] 0,5 pont: A pakliban csak a megadott számú kártya található (A-B-C-D-Joker középső és A-B-C-D-Joker szélső megállóra).
+  - [X] 0,5 pont: A Joker kártya megfelelően működik.
 - **Szakaszépítés (5,5 pont)**
-  - [ ] 0,5 pont: Szakasz csak az aktuális metróvonal végéből az aktuális megállókártyán jelzett betűjelű megállóba húzható.
-  - [ ] 0,5 pont: A Joker állomás megfelelően működik.
-  - [ ] 1,0 pont: Szakaszok nem keresztezhetik egymást.
-  - [ ] 0,5 pont: Szakaszok nem haladhatnak párhuzamosan (két megállóhely közé csak egy szakasz húzható).
-  - [ ] 0,5 pont: Szakasz nem húzható olyan megállóhelybe, ahol már járt ez a metróvonal (kör/hurok elkerülése).
-  - [ ] 1,0 pont: Szakasz nem haladhat át megállóhelyen (minden szakasz pontosan két megállóhelyet érint)
-  - [ ] 1,5 pont: Szakasz 45 fokban átlósan is építhető.
+  - [X] 0,5 pont: Szakasz csak az aktuális metróvonal végéből az aktuális megállókártyán jelzett betűjelű megállóba húzható.
+  - [X] 0,5 pont: A Joker állomás megfelelően működik.
+  - [X] 1,0 pont: Szakaszok nem keresztezhetik egymást.
+  - [X] 0,5 pont: Szakaszok nem haladhatnak párhuzamosan (két megállóhely közé csak egy szakasz húzható).
+  - [] 0,5 pont: Szakasz nem húzható olyan megállóhelybe, ahol már járt ez a metróvonal (kör/hurok elkerülése).
+  - [X] 1,0 pont: Szakasz nem haladhat át megállóhelyen (minden szakasz pontosan két megállóhelyet érint)
+  - [X] 1,5 pont: Szakasz 45 fokban átlósan is építhető.
 - **Fordulók (1.5 points)**
-  - [ ] 0,5 pont: A fordulók (színek/metróvonalak) sorrendje előre ki lett generálva és megjelenítésre kerül (látszik, hol tartunk).
-  - [ ] 1,0 pont: A 8. kártyafordítás után vége a fordulónak és új színt kezdünk.
+  - [X] 0,5 pont: A fordulók (színek/metróvonalak) sorrendje előre ki lett generálva és megjelenítésre kerül (látszik, hol tartunk).
+  - [X] 1,0 pont: A 8. kártyafordítás után vége a fordulónak és új színt kezdünk.
     - [ ] _Vagy 0,5 részpontért: Egy gombbal lehet bármikor a következő fordulóra lépni (új metróvonal/szín elkezdése)._
 - **Pontozás (3,5 pont)**
   - Forduló pontozás működik
-    - [ ] 0,5 pont: Hány kerületet érintett (PK)
-    - [ ] 0,5 pont: Mennyi a legtöbb megállóhely amit egy kerületben érintett (PM)
-    - [ ] 0,5 pont: Hányszor kelt át a dunán (PD)
-    - [ ] 0,5 pont: Forduló pont FP = (PK x PM) + PD
-    - [ ] _Vagy 0,5 részpontért: Ha a fentebbieket nem sikerül megvalósítani, részpont kapható azért, ha a forduló összpontja az érintett megállóhelyek száma._
+    - [X] 0,5 pont: Hány kerületet érintett (PK)
+    - [X] 0,5 pont: Mennyi a legtöbb megállóhely amit egy kerületben érintett (PM)
+    - [X] 0,5 pont: Hányszor kelt át a dunán (PD)
+    - [X] 0,5 pont: Forduló pont FP = (PK x PM) + PD
+    - [X] _Vagy 0,5 részpontért: Ha a fentebbieket nem sikerül megvalósítani, részpont kapható azért, ha a forduló összpontja az érintett megállóhelyek száma._
   - Játék pontozás működik
-    - [ ] 0,5 pont: Csomópontok, azaz hány megállóhelyet érint két vonal (P2); három vonal (P3); négy vonal (P4)
-    - [ ] 0,5 pont: A pályaudvarok érintéséért járó pontok menet közben vannak jelezve egy "csúszkán" (PP)
-    - [ ] 0,5 pont: Össz pontszám = Sum(FP) + (PP) + (2 x P2) + (5 x P3) + (9 x P4)
+    - [X] 0,5 pont: Csomópontok, azaz hány megállóhelyet érint két vonal (P2); három vonal (P3); négy vonal (P4)
+    - [X] 0,5 pont: A pályaudvarok érintéséért járó pontok menet közben vannak jelezve egy "csúszkán" (PP)
+    - [X] 0,5 pont: Össz pontszám = Sum(FP) + (PP) + (2 x P2) + (5 x P3) + (9 x P4)
 
 ### Extra feladatok (5 pont)
 

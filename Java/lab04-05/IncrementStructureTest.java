@@ -5,6 +5,7 @@ import module org.junit.jupiter;
 
 @BeforeAll
 public static void init() {
+    // usedLang = Lang.EN; // uncomment to enforce the message language
     Use.theClass("math.operation.safe.Increment")
        .that(hasUsualModifiers())
        .info("Biztonságos növelő művelet egész számokra, amely megakadályozza a túlcsordulást.")
@@ -14,7 +15,7 @@ public static void init() {
 
 @Test
 public void constructor() {
-    it.hasConstructor(withArgsLikeAllFields())
+    it.hasConstructor(withNoParams())
       .that(hasUsualModifiers());
 }
 

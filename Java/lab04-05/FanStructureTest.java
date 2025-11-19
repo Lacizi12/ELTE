@@ -5,6 +5,7 @@ import module org.junit.jupiter;
 
 @BeforeAll
 public static void init() {
+    // usedLang = Lang.EN; // uncomment to enforce the message language
     Use.theClass("music.fan.Fan")
        .that(hasUsualModifiers());
 }
@@ -55,28 +56,28 @@ public void methodFavesAtSameLabel() {
 
 @Test
 public void methodToString1() {
-    it.hasMethod("toString1", withArgsLikeFields())
+    it.hasMethod("toString1", withNoParams())
       .that(hasUsualModifiers())
       .thatReturns("String");
 }
 
 @Test
 public void methodToString2() {
-    it.hasMethod("toString2", withArgsLikeFields())
+    it.hasMethod("toString2", withNoParams())
       .that(hasUsualModifiers())
       .thatReturns("String");
 }
 
 @Test
 public void methodToString3() {
-    it.hasMethod("toString3", withArgsLikeFields())
+    it.hasMethod("toString3", withNoParams())
       .that(hasUsualModifiers())
       .thatReturns("String");
 }
 
 @Test
 public void methodToString4() {
-    it.hasMethod("toString4", withArgsLikeFields())
+    it.hasMethod("toString4", withNoParams())
       .that(hasUsualModifiers())
       .thatReturns("String");
 }

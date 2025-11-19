@@ -5,6 +5,7 @@ import module org.junit.jupiter;
 
 @BeforeAll
 public static void init() {
+    // usedLang = Lang.EN; // uncomment to enforce the message language
     Use.theClass("magic.library.Incantation")
        .that(hasUsualModifiers());
 }
@@ -27,20 +28,26 @@ public void fieldIndex() {
 @Test
 public void constructor01() {
     it.hasConstructor(withArgsLikeAllFields())
-      .that(hasUsualModifiers());
+      .that(hasUsualModifiers())
+      .info("""
+          Létrehoz egy varázslatos ráolvasást, melynek szövegét eltárolja az index változóban tárolt egész számmal együtt.
+          @throws IllegalArgumentException
+      """);
 }
 
 @Test
 public void constructor02() {
     it.hasConstructor(withParams("other: Incantation"))
-      .that(hasUsualModifiers());
+      .that(hasUsualModifiers())
+      .info("Létrehoz egy varázslatos ráolvasást az argumentumban lévő ráolvasásból másolva.");
 }
 
 @Test
 public void methodEnchant() {
     it.hasMethod("enchant", withParams("other: Incantation", "isPrepend: boolean"))
       .that(hasUsualModifiers())
-      .thatReturns("boolean");
+      .thatReturns("boolean")
+      .info("A paraméterben átadott ráolvasás szövegét próbálja megváltoztatni.");
 }
 
 void main() {}

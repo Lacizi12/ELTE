@@ -1,502 +1,493 @@
 // --- 1. LÉPÉS: HTML ELEMEK KIVÁLASZTÁSA ---
-const canvas = document.querySelector("#game-canvas");
-const ctx = canvas.getContext("2d");
+const vaszon = document.querySelector("#game-canvas");
+const rajzolo = vaszon.getContext("2d");
 
-const playerNameDisplay = document.querySelector("#player-name-display");
-const currentLineDisplay = document.querySelector("#current-line-display");
-const timerDisplay = document.querySelector("#timer-display");
+const jatekosNevKijelzo = document.querySelector("#player-name-display");
+const aktualisVonalKijelzo = document.querySelector("#current-line-display");
+const idozitoKijelzo = document.querySelector("#timer-display");
 
-const cardDisplay = document.querySelector("#card-display");
-const skipButton = document.querySelector("#skip-btn");
-const turnOrderDisplay = document.querySelector("#turn-order-display");
-const trainScoreDisplay = document.querySelector("#train-score-display");
-const totalScoreDisplay = document.querySelector("#total-score-display");
+const kartyaKijelzo = document.querySelector("#card-display");
+const passzGomb = document.querySelector("#skip-btn");
+const forduloSorrendKijelzo = document.querySelector("#turn-order-display");
+const vonatPontKijelzo = document.querySelector("#train-score-display");
+const osszPontKijelzo = document.querySelector("#total-score-display");
+const vonatPontCsuszka = document.querySelector("#train-score-slider");
 
-// --- 2. LÉPÉS: JÁTÉK KONSTANSOK ÉS BEÁLLÍTÁSOK ---
-const GRID_SIZE = 10;
-const BOARD_SIZE = 600;
-const CELL_SIZE = BOARD_SIZE / GRID_SIZE;
+// --- 2. LÉPÉS: JÁTÉK KONSTANSOK ---
+const RACS_MERET = 10;
+const TABLA_MERET = 600;
+const CELLA_MERET = TABLA_MERET / RACS_MERET;
 
-canvas.width = BOARD_SIZE;
-canvas.height = BOARD_SIZE;
+// A Duna vonala (koordináták a rácsvonalakon)
+const DUNA_SZAKASZOK = [
+    { p1: {x: 5, y: 0}, p2: {x: 5, y: 6} },
+    { p1: {x: 5, y: 6}, p2: {x: 4, y: 7} },
+    { p1: {x: 4, y: 7}, p2: {x: 4, y: 10} }
+];
 
-// --- 3. LÉPÉS: A JÁTÉK ÁLLAPOTA (GAME STATE) ---
-let gameState = {
-    playerName: "",
-    stations: [],
-    lines: [],
-    lineOrder: [],
-    currentLineIndex: 0,
+// Pályaudvar pontok sorozata
+const VONAT_PONTOK = [0, 1, 2, 4, 6, 8, 11, 14, 17, 21, 25];
+
+vaszon.width = TABLA_MERET;
+vaszon.height = TABLA_MERET;
+
+// --- 3. LÉPÉS: A JÁTÉK ÁLLAPOTA ---
+let jatekAllapot = {
+    jatekosNev: "",
+    allomasok: [],
+    vonalak: [],
+    vonalSorrend: [],
+    aktualisVonalIndex: 0,
     
-    currentCardDeck: [],
-    currentCard: null,
-    turnCounter: 0,
+    aktualisKartyaPakli: [],
+    aktualisKartya: null,
+    korSzamlalo: 0,
 
-    drawnSegments: [],
+    megrajzoltSzakaszok: [],
+    aktualisVonalVegpontok: [], // Ez tárolja, honnan folytathatod
     
-    currentLineEndpoints: [], 
-    
-    scores: {
-        train: 0,
-        total: 0,
+    pontszamok: {
+        vonatIndex: 0, 
+        forduloPontok: [],
+        osszesen: 0,
     },
-    startTime: null,
+    
+    aktualisForduloStatisztika: {
+        dunaAtkelesek: 0,
+        keruletek: {},
+    },
+
+    kezdesIdo: null,
+    jatekVegeVan: false
 };
 
-let selectedStartStation = null;
+let kivalasztottKezdoAllomas = null;
 
-// --- 4. LÉPÉS: INDÍTÁS ÉS ADATBETÖLTÉS ---
+// --- 4. INDÍTÁS ---
 
-async function initializeGame() {
-    gameState.playerName = localStorage.getItem("budapestMetroPlayer") || "Játékos";
-    playerNameDisplay.textContent = gameState.playerName;
+async function jatekInicializalasa() {
+    jatekAllapot.jatekosNev = localStorage.getItem("budapestMetroPlayer") || "Játékos";
+    jatekosNevKijelzo.textContent = jatekAllapot.jatekosNev;
 
-    gameState.startTime = Date.now();
-    startTimer();
+    jatekAllapot.kezdesIdo = Date.now();
+    idozitoInditasa();
+    vonatCsuszkaFrissitese(); 
 
     try {
-        const [stationsRes, linesRes] = await Promise.all([
+        const [allomasValasz, vonalValasz] = await Promise.all([
             fetch('stations.json'),
             fetch('lines.json')
         ]);
         
-        gameState.stations = await stationsRes.json();
-        gameState.lines = await linesRes.json();
+        jatekAllapot.allomasok = await allomasValasz.json();
+        jatekAllapot.vonalak = await vonalValasz.json();
 
-        startGame();
+        jatekInditasa();
 
-    } catch (error) {
-        console.error("Hiba az adatok betöltésekor:", error);
-        alert("Hiba a játékfájlok betöltésekor. Kérlek, frissítsd az oldalt.");
+    } catch (hiba) {
+        console.error("Hiba:", hiba);
     }
 }
 
-function startGame() {
-    const lineIds = gameState.lines.map(line => line.id);
-    gameState.lineOrder = shuffleArray(lineIds);
-    startTurn();
-    drawGame();
+function jatekInditasa() {
+    const vonalAzonositok = jatekAllapot.vonalak.map(vonal => vonal.id);
+    jatekAllapot.vonalSorrend = tombKeverese(vonalAzonositok);
+    forduloSorrendKirajzolasa();
+    forduloInditasa();
+    jatekRajzolasa();
 }
 
-// --- 5. LÉPÉS: FŐ RAJZOLÓ FÜGGVÉNYEK ---
+// --- 5. RAJZOLÁS ---
 
-function drawGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+function jatekRajzolasa() {
+    rajzolo.clearRect(0, 0, vaszon.width, vaszon.height);
 
-    drawGrid();       
-    drawRiver();      
-    drawSegments();   
-    drawStations();   
-    
-    drawSelectionIndicator();
+    racsRajzolasa();       
+    dunaRajzolasa();      
+    szakaszokRajzolasa();   
+    allomasokRajzolasa();   
+    kijelolesRajzolasa();
 }
 
-function drawGrid() {
-    ctx.fillStyle = "#ebebeb"; 
-    ctx.fillRect(0, 0, BOARD_SIZE, BOARD_SIZE);
+function racsRajzolasa() {
+    rajzolo.fillStyle = "#ebebeb"; 
+    rajzolo.fillRect(0, 0, TABLA_MERET, TABLA_MERET);
+    rajzolo.strokeStyle = "#ffffff"; 
+    rajzolo.lineWidth = 3; 
 
-    ctx.strokeStyle = "#ffffff"; 
-    ctx.lineWidth = 3; 
-
-    ctx.beginPath();
-    for (let row = 0; row < GRID_SIZE; row++) {
-        for (let col = 0; col < GRID_SIZE; col++) {
-            const x = col * CELL_SIZE;
-            const y = row * CELL_SIZE;
-            
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + CELL_SIZE, y + CELL_SIZE);
-            
-            ctx.moveTo(x + CELL_SIZE, y);
-            ctx.lineTo(x, y + CELL_SIZE);
+    rajzolo.beginPath();
+    for (let sor = 0; sor < RACS_MERET; sor++) {
+        for (let oszlop = 0; oszlop < RACS_MERET; oszlop++) {
+            const x = oszlop * CELLA_MERET; const y = sor * CELLA_MERET;
+            rajzolo.moveTo(x, y); rajzolo.lineTo(x + CELLA_MERET, y + CELLA_MERET);
+            rajzolo.moveTo(x + CELLA_MERET, y); rajzolo.lineTo(x, y + CELLA_MERET);
         }
     }
-    ctx.stroke();
+    rajzolo.stroke();
 
-    ctx.beginPath();
-    for (let i = 0; i <= GRID_SIZE; i++) {
-        ctx.moveTo(0, i * CELL_SIZE);
-        ctx.lineTo(BOARD_SIZE, i * CELL_SIZE);
-        
-        ctx.moveTo(i * CELL_SIZE, 0);
-        ctx.lineTo(i * CELL_SIZE, BOARD_SIZE);
+    rajzolo.beginPath();
+    for (let i = 0; i <= RACS_MERET; i++) {
+        rajzolo.moveTo(0, i * CELLA_MERET); rajzolo.lineTo(TABLA_MERET, i * CELLA_MERET);
+        rajzolo.moveTo(i * CELLA_MERET, 0); rajzolo.lineTo(i * CELLA_MERET, TABLA_MERET);
     }
-    ctx.stroke();
+    rajzolo.stroke();
 }
 
-function drawRiver() {
-    ctx.beginPath();
-    ctx.moveTo(6 * CELL_SIZE, 0);
-    ctx.lineTo(6 * CELL_SIZE, 3 * CELL_SIZE);
-    ctx.lineTo(5 * CELL_SIZE, 4 * CELL_SIZE);
-    ctx.lineTo(5 * CELL_SIZE, 7 * CELL_SIZE);
-    ctx.lineTo(7 * CELL_SIZE, 9 * CELL_SIZE);
-    ctx.lineTo(7 * CELL_SIZE, 10 * CELL_SIZE);
+function dunaRajzolasa() {
+    rajzolo.beginPath();
+    rajzolo.moveTo(DUNA_SZAKASZOK[0].p1.x * CELLA_MERET, DUNA_SZAKASZOK[0].p1.y * CELLA_MERET);
+    for (const szakasz of DUNA_SZAKASZOK) {
+        rajzolo.lineTo(szakasz.p2.x * CELLA_MERET, szakasz.p2.y * CELLA_MERET);
+    }
     
-    ctx.lineWidth = 12; 
-    ctx.strokeStyle = "#a3d5ff"; 
-    ctx.lineCap = "butt"; 
-    ctx.lineJoin = "round"; 
-    ctx.stroke();
+    rajzolo.lineWidth = 12; 
+    rajzolo.strokeStyle = "#a3d5ff"; 
+    rajzolo.lineCap = "butt"; 
+    rajzolo.lineJoin = "round"; 
+    rajzolo.stroke();
 }
 
-function drawStations() {
-    const startStationColors = {};
-    gameState.lines.forEach(line => {
-        startStationColors[line.start] = line.color;
-    });
+function allomasokRajzolasa() {
+    const kezdoAllomasSzinek = {};
+    jatekAllapot.vonalak.forEach(vonal => kezdoAllomasSzinek[vonal.start] = vonal.color);
 
-    gameState.stations.forEach(station => {
-        const xPos = station.x * CELL_SIZE + (CELL_SIZE / 2);
-        const yPos = station.y * CELL_SIZE + (CELL_SIZE / 2);
+    jatekAllapot.allomasok.forEach(allomas => {
+        const x = allomas.x * CELLA_MERET + (CELLA_MERET / 2);
+        const y = allomas.y * CELLA_MERET + (CELLA_MERET / 2);
+        let r = 19, kitoltes = "#000", szovegSzin = "#FFF", betutipus = "bold 20px Verdana";
 
-        let radius = 19; 
-        let fillColor = "#000000"; 
-        let textColor = "#FFFFFF"; 
-        let fontSize = "bold 20px Verdana, Arial, sans-serif"; 
-
-        if (startStationColors[station.id]) {
-            fillColor = startStationColors[station.id]; 
-            radius = 21; 
-            if (fillColor === 'yellow' || fillColor === '#FFD700') textColor = "#000000";
+        if (kezdoAllomasSzinek[allomas.id]) {
+            kitoltes = kezdoAllomasSzinek[allomas.id]; r = 21;
+            if (kitoltes === 'yellow' || kitoltes === '#FFD700') szovegSzin = "#000";
         } 
-        
-        if (station.type === "?") fillColor = "#000"; 
+        if (allomas.type === "?") kitoltes = "#000"; 
 
-        ctx.beginPath();
-        ctx.arc(xPos, yPos, radius, 0, 2 * Math.PI);
-        ctx.fillStyle = fillColor;
-        ctx.fill();
+        rajzolo.beginPath(); rajzolo.arc(x, y, r, 0, 2 * Math.PI);
+        rajzolo.fillStyle = kitoltes; rajzolo.fill();
+        rajzolo.strokeStyle = "white"; rajzolo.lineWidth = 3; rajzolo.stroke();
         
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 3; 
-        ctx.stroke();
-        
-        ctx.fillStyle = textColor;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle"; 
-        
-        if (station.type === "?") {
-            ctx.font = "bold 11px Verdana";
-            ctx.fillText("Deák", xPos, yPos - 6); 
-            ctx.fillText("tér", xPos, yPos + 6);
+        rajzolo.fillStyle = szovegSzin; rajzolo.textAlign = "center"; rajzolo.textBaseline = "middle"; 
+        if (allomas.type === "?") {
+            rajzolo.font = "bold 11px Verdana";
+            rajzolo.fillText("Deák", x, y - 6); rajzolo.fillText("tér", x, y + 6);
         } else {
-            ctx.font = fontSize;
-            ctx.fillText(station.type, xPos, yPos); 
+            rajzolo.font = betutipus; rajzolo.fillText(allomas.type, x, y); 
         }
 
-        if (station.train) {
-            const badgeDistance = radius * 0.8; 
-            const badgeX = xPos + badgeDistance;
-            const badgeY = yPos + badgeDistance;
-            const badgeRadius = 9;
-            
-            ctx.beginPath();
-            ctx.arc(badgeX, badgeY, badgeRadius, 0, 2 * Math.PI);
-            ctx.fillStyle = "#0078D7";
-            ctx.fill();
-            ctx.strokeStyle = "white";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            ctx.fillStyle = "white";
-            ctx.font = "12px Arial"; 
-            ctx.fillText("🚂", badgeX, badgeY + 1); 
+        if (allomas.train) {
+            const bx = x + r * 0.8, by = y + r * 0.8;
+            rajzolo.beginPath(); rajzolo.arc(bx, by, 9, 0, 2 * Math.PI);
+            rajzolo.fillStyle = "#0078D7"; rajzolo.fill();
+            rajzolo.strokeStyle = "white"; rajzolo.lineWidth = 2; rajzolo.stroke();
+            rajzolo.fillStyle = "white"; rajzolo.font = "12px Arial"; rajzolo.fillText("🚂", bx, by + 1); 
         }
     });
 }
 
-function drawSegments() {
-    gameState.drawnSegments.forEach(segment => {
-        const color = getLineColor(segment.line);
-        
-        const fromX = segment.from.x * CELL_SIZE + (CELL_SIZE / 2);
-        const fromY = segment.from.y * CELL_SIZE + (CELL_SIZE / 2);
-        const toX = segment.to.x * CELL_SIZE + (CELL_SIZE / 2);
-        const toY = segment.to.y * CELL_SIZE + (CELL_SIZE / 2);
+function szakaszokRajzolasa() {
+    jatekAllapot.megrajzoltSzakaszok.forEach(szakasz => {
+        const szin = vonalSzinLekerese(szakasz.line);
+        const kx = szakasz.from.x * CELLA_MERET + CELLA_MERET/2;
+        const ky = szakasz.from.y * CELLA_MERET + CELLA_MERET/2;
+        const vx = szakasz.to.x * CELLA_MERET + CELLA_MERET/2;
+        const vy = szakasz.to.y * CELLA_MERET + CELLA_MERET/2;
 
-        ctx.beginPath();
-        ctx.moveTo(fromX, fromY);
-        ctx.lineTo(toX, toY);
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 10; 
-        ctx.lineCap = "round"; 
-        ctx.stroke();
+        rajzolo.beginPath(); rajzolo.moveTo(kx, ky); rajzolo.lineTo(vx, vy);
+        rajzolo.strokeStyle = szin; rajzolo.lineWidth = 10; rajzolo.lineCap = "round"; rajzolo.stroke();
     });
 }
 
-function drawSelectionIndicator() {
-    if (selectedStartStation) {
-        const xPos = selectedStartStation.x * CELL_SIZE + (CELL_SIZE / 2);
-        const yPos = selectedStartStation.y * CELL_SIZE + (CELL_SIZE / 2);
-
-        ctx.beginPath();
-        ctx.arc(xPos, yPos, CELL_SIZE / 2.1, 0, 2 * Math.PI);
-        ctx.strokeStyle = "#00bcd4";
-        ctx.lineWidth = 4;
-        ctx.setLineDash([6, 6]);
-        ctx.stroke();
-        ctx.setLineDash([]);
+function kijelolesRajzolasa() {
+    if (kivalasztottKezdoAllomas) {
+        const x = kivalasztottKezdoAllomas.x * CELLA_MERET + CELLA_MERET/2;
+        const y = kivalasztottKezdoAllomas.y * CELLA_MERET + CELLA_MERET/2;
+        rajzolo.beginPath(); rajzolo.arc(x, y, CELLA_MERET/2.1, 0, 2*Math.PI);
+        rajzolo.strokeStyle = "#00bcd4"; rajzolo.lineWidth = 4; 
+        rajzolo.setLineDash([6, 6]); rajzolo.stroke(); rajzolo.setLineDash([]);
     }
 }
 
-// --- 6. LÉPÉS: JÁTÉKMENET ---
+// --- 6. JÁTÉKMENET ÉS PONTOZÁS ---
 
-function startTurn() {
-    const currentLineId = gameState.lineOrder[gameState.currentLineIndex];
-    const currentLine = gameState.lines.find(line => line.id === currentLineId);
+function forduloInditasa() {
+    if (jatekAllapot.jatekVegeVan) return;
+
+    const aktualisVonalId = jatekAllapot.vonalSorrend[jatekAllapot.aktualisVonalIndex];
+    const aktualisVonal = jatekAllapot.vonalak.find(v => v.id === aktualisVonalId);
     
-    if (!currentLine) return;
+    aktualisVonalKijelzo.textContent = aktualisVonal.name;
+    aktualisVonalKijelzo.style.color = aktualisVonal.color;
+    aktualisVonalKijelzo.style.backgroundColor = "#fff";
+    aktualisVonalKijelzo.style.padding = "2px 5px";
+    aktualisVonalKijelzo.style.borderRadius = "4px";
 
-    currentLineDisplay.textContent = currentLine.name;
-    currentLineDisplay.style.color = currentLine.color;
-    currentLineDisplay.style.backgroundColor = "#fff";
-    currentLineDisplay.style.padding = "2px 5px";
-    currentLineDisplay.style.borderRadius = "4px";
-
-    const startStation = gameState.stations.find(s => s.id === currentLine.start);
-    if (!startStation) return;
-
-    gameState.currentLineEndpoints = [{ x: startStation.x, y: startStation.y }];
+    const kezdoAllomas = jatekAllapot.allomasok.find(a => a.id === aktualisVonal.start);
     
-    gameState.turnCounter = 0;
+    jatekAllapot.aktualisVonalVegpontok = [{ x: kezdoAllomas.x, y: kezdoAllomas.y }];
+    jatekAllapot.korSzamlalo = 0;
     
-    const deck = ['A', 'B', 'C', 'D', 'Joker', 'A', 'B', 'C', 'D', 'Joker'];
-    gameState.currentCardDeck = shuffleArray(deck);
+    jatekAllapot.aktualisForduloStatisztika = { dunaAtkelesek: 0, keruletek: {} };
+    keruletStatisztikaHozzaadasa(kezdoAllomas);
 
-    drawCard();
+    const pakli = ['A', 'B', 'C', 'D', 'Joker', 'A', 'B', 'C', 'D', 'Joker'];
+    jatekAllapot.aktualisKartyaPakli = tombKeverese(pakli);
+
+    forduloSorrendKirajzolasa();
+    kartyaHuzasa();
 }
 
-function drawCard() {
-    if (gameState.turnCounter >= 8) {
-        console.log("FORDULÓ VÉGE");
-        gameState.currentLineIndex++; 
-
-        if (gameState.currentLineIndex >= gameState.lines.length) {
-            alert("VÉGE A JÁTÉKNAK!");
-            return;
-        } else {
-            startTurn();
-        }
+function kartyaHuzasa() {
+    if (jatekAllapot.korSzamlalo >= 8) {
+        forduloVege(); 
         return;
     }
 
-    const card = gameState.currentCardDeck.pop();
-    gameState.currentCard = card;
+    const kartya = jatekAllapot.aktualisKartyaPakli.pop();
+    jatekAllapot.aktualisKartya = kartya;
 
-    const cardEl = cardDisplay.querySelector('.card-content') || cardDisplay;
-    cardEl.textContent = card;
-    if (card === 'Joker') {
-        cardEl.style.color = "#4b006e";
-    } else {
-        cardEl.style.color = "#333";
-    }
+    const kartyaElem = kartyaKijelzo.querySelector('.card-content') || kartyaKijelzo;
+    kartyaElem.textContent = kartya;
+    kartyaElem.style.color = (kartya === 'Joker') ? "#4b006e" : "#333";
     
-    gameState.turnCounter++;
+    jatekAllapot.korSzamlalo++;
 }
 
-// --- 7. LÉPÉS: ESEMÉNYKEZELÉS ÉS SZABÁLYOK ---
+function forduloVege() {
+    const statisztika = jatekAllapot.aktualisForduloStatisztika;
+    const keruletekSzama = Object.keys(statisztika.keruletek).length;
+    const maxAllomasEgyKeruletben = Math.max(...Object.values(statisztika.keruletek));
+    const dunaPontok = statisztika.dunaAtkelesek;
 
-canvas.addEventListener('click', handleCanvasClick);
+    const forduloPontszam = (keruletekSzama * maxAllomasEgyKeruletben) + dunaPontok;
+    jatekAllapot.pontszamok.forduloPontok.push(forduloPontszam);
+    jatekAllapot.pontszamok.osszesen += forduloPontszam;
 
-skipButton.addEventListener('click', () => {
-    console.log("Kártya passzolva!");
-    selectedStartStation = null;
-    drawGame();
-    drawCard();
+    alert(`FORDULÓ VÉGE!\n\n` +
+          `Érintett kerületek: ${keruletekSzama}\n` +
+          `Max állomás egy kerületben: ${maxAllomasEgyKeruletben}\n` +
+          `Duna átkelés: ${dunaPontok}\n\n` +
+          `PONT: ${forduloPontszam}`);
+
+    feluletFrissitese();
+
+    jatekAllapot.aktualisVonalIndex++;
+    if (jatekAllapot.aktualisVonalIndex >= jatekAllapot.vonalak.length) {
+        jatekVege();
+    } else {
+        forduloInditasa();
+    }
+}
+
+function jatekVege() {
+    jatekAllapot.jatekVegeVan = true;
+    
+    const allomasSzamlalo = {};
+    jatekAllapot.megrajzoltSzakaszok.forEach(szakasz => {
+        const p1 = `${szakasz.from.x},${szakasz.from.y}`;
+        const p2 = `${szakasz.to.x},${szakasz.to.y}`;
+        if (!allomasSzamlalo[p1]) allomasSzamlalo[p1] = new Set();
+        if (!allomasSzamlalo[p2]) allomasSzamlalo[p2] = new Set();
+        allomasSzamlalo[p1].add(szakasz.line);
+        allomasSzamlalo[p2].add(szakasz.line);
+    });
+
+    let csomopontPontok = 0;
+    for (const kulcs in allomasSzamlalo) {
+        const vonalSzam = allomasSzamlalo[kulcs].size;
+        if (vonalSzam === 2) csomopontPontok += 2;
+        if (vonalSzam === 3) csomopontPontok += 5;
+        if (vonalSzam === 4) csomopontPontok += 9;
+    }
+
+    const vonatPontok = VONAT_PONTOK[Math.min(jatekAllapot.pontszamok.vonatIndex, VONAT_PONTOK.length - 1)];
+    const vegsoPontszam = jatekAllapot.pontszamok.osszesen + vonatPontok + csomopontPontok;
+
+    osszPontKijelzo.textContent = vegsoPontszam;
+    
+    setTimeout(() => {
+        alert(`JÁTÉK VÉGE!\n\n` +
+              `Fordulók pontjai: ${jatekAllapot.pontszamok.osszesen}\n` +
+              `Pályaudvar bónusz: ${vonatPontok}\n` +
+              `Csomópont bónusz: ${csomopontPontok}\n\n` +
+              `VÉGSŐ PONTSZÁM: ${vegsoPontszam}`);
+    }, 100);
+}
+
+// --- 7. INTERAKCIÓK ---
+
+vaszon.addEventListener('click', kattintasKezeles);
+passzGomb.addEventListener('click', () => {
+    if (jatekAllapot.jatekVegeVan) return;
+    kivalasztottKezdoAllomas = null;
+    jatekRajzolasa();
+    kartyaHuzasa();
 });
 
-function handleCanvasClick(event) {
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+function kattintasKezeles(e) {
+    if (jatekAllapot.jatekVegeVan) return;
+    const teglalap = vaszon.getBoundingClientRect();
+    const x = e.clientX - teglalap.left; const y = e.clientY - teglalap.top;
+    const cx = Math.floor(x / CELLA_MERET); const cy = Math.floor(y / CELLA_MERET);
+    const allomas = allomasLekerese(cx, cy);
 
-    const cellX = Math.floor(x / CELL_SIZE);
-    const cellY = Math.floor(y / CELL_SIZE);
-
-    const clickedStation = getStationAt(cellX, cellY);
-
-    if (!clickedStation) {
-        selectedStartStation = null;
-        drawGame();
-        return;
-    }
-
-    if (selectedStartStation === null) {
-        selectedStartStation = clickedStation;
-        drawGame();
-    } else {
-        validateAndDrawLine(selectedStartStation, clickedStation);
-        selectedStartStation = null;
-    }
+    if (!allomas) { kivalasztottKezdoAllomas = null; jatekRajzolasa(); return; }
+    if (!kivalasztottKezdoAllomas) { kivalasztottKezdoAllomas = allomas; jatekRajzolasa(); } 
+    else { vonalEllenorzesEsRajzolas(kivalasztottKezdoAllomas, allomas); kivalasztottKezdoAllomas = null; }
 }
 
-function validateAndDrawLine(startStation, endStation) {
-    // 1. SZABÁLY: Nem önmagába
-    if (startStation.id === endStation.id) return;
+function vonalEllenorzesEsRajzolas(kezdo, veg) {
+    if (kezdo.id === veg.id) return;
 
-    // 2. SZABÁLY: Vonal vége
-    const isEndpoint = gameState.currentLineEndpoints.find(
-        p => p.x === startStation.x && p.y === startStation.y
-    );
-    if (!isEndpoint) {
-        alert("Csak a vonal végéről folytathatod!");
-        drawGame();
-        return;
+    const vegpontE = jatekAllapot.aktualisVonalVegpontok.find(p => p.x === kezdo.x && p.y === kezdo.y);
+    if (!vegpontE) { alert("Csak a vonal végéről folytathatod!"); jatekRajzolasa(); return; }
+
+    const dx = Math.abs(kezdo.x - veg.x); const dy = Math.abs(kezdo.y - veg.y);
+    if (!((dx===0 && dy>0) || (dy===0 && dx>0) || (dx===dy && dx>0))) {
+        console.warn("Nem egyenes!"); jatekRajzolasa(); return;
     }
 
-    // 3. SZABÁLY: Egyenes vonal
-    const dx = startStation.x - endStation.x;
-    const dy = startStation.y - endStation.y;
-    const absDx = Math.abs(dx);
-    const absDy = Math.abs(dy);
-    
-    const isStraight = (absDx === 0 && absDy > 0) || 
-                       (absDy === 0 && absDx > 0) || 
-                       (absDx === absDy && absDx > 0);
-                       
-    if (!isStraight) {
-        console.warn("Nem egyenes vonal!");
-        drawGame(); 
-        return;
-    }
+    const kartya = jatekAllapot.aktualisKartya;
+    const ervenyes = (kartya === 'Joker') || (veg.type === '?') || (veg.type === kartya);
+    if (!ervenyes) { alert(`Rossz állomás! Kártya: ${kartya}`); jatekRajzolasa(); return; }
 
-    // 4. SZABÁLY: Kártya
-    const card = gameState.currentCard;
-    const isCardValid = (card === 'Joker') || (endStation.type === '?') || (endStation.type === card);
-    
-    if (!isCardValid) {
-        alert(`Rossz állomás! A kártya: ${card}, te erre kattintottál: ${endStation.type}`);
-        drawGame();
-        return;
-    }
-
-    // 5. SZABÁLY: Köztes állomás
-    const steps = Math.max(absDx, absDy); 
-    const stepX = (endStation.x - startStation.x) / steps;
-    const stepY = (endStation.y - startStation.y) / steps;
-
-    for (let i = 1; i < steps; i++) {
-        const checkX = startStation.x + i * stepX;
-        const checkY = startStation.y + i * stepY;
-        
-        if (getStationAt(checkX, checkY)) {
-            alert("HIBA: Nem haladhatsz át más állomáson!");
-            drawGame();
-            return;
+    const koztesPontok = szakaszPontjainakLekerese(kezdo, veg);
+    for (let i = 1; i < koztesPontok.length - 1; i++) {
+        const p = koztesPontok[i];
+        if (allomasLekerese(p.x, p.y)) {
+            alert("Nem mehetsz át állomáson!"); jatekRajzolasa(); return;
         }
     }
 
-    // 6. SZABÁLY (ÚJ): Kereszteződés ellenőrzése
-    // Nem lehet párhuzamos vonal ugyanott, és nem metszhet más vonalat a nyílt pályán.
+    let vanMetszes = false;
+    for (const szakasz of jatekAllapot.megrajzoltSzakaszok) {
+        const regiPontok = szakaszPontjainakLekerese(szakasz.from, szakasz.to);
+        for (let i = 1; i < koztesPontok.length - 1; i++) {
+            for (let j = 1; j < regiPontok.length - 1; j++) {
+                if (koztesPontok[i].x === regiPontok[j].x && koztesPontok[i].y === regiPontok[j].y) {
+                    vanMetszes = true; break;
+                }
+            }
+            if (vanMetszes) break;
+        }
+        if (vanMetszes) break;
+    }
     
-    // Először nézzük meg, van-e már ilyen vonal (duplikáció)
-    const isDuplicate = gameState.drawnSegments.some(seg => 
-        (seg.from.x === startStation.x && seg.from.y === startStation.y && seg.to.x === endStation.x && seg.to.y === endStation.y) ||
-        (seg.from.x === endStation.x && seg.from.y === endStation.y && seg.to.x === startStation.x && seg.to.y === startStation.y)
+    const duplikalt = jatekAllapot.megrajzoltSzakaszok.some(s => 
+        (s.from.x===kezdo.x && s.from.y===kezdo.y && s.to.x===veg.x && s.to.y===veg.y) ||
+        (s.from.x===veg.x && s.from.y===veg.y && s.to.x===kezdo.x && s.to.y===kezdo.y)
     );
-    if (isDuplicate) {
-        alert("Itt már van vonal!");
-        drawGame();
-        return;
+
+    if (vanMetszes || duplikalt) { 
+        alert("Kereszteződés tilos!"); 
+        jatekRajzolasa(); 
+        return; 
     }
 
-    // Most nézzük a metszést
-    const hasIntersection = gameState.drawnSegments.some(seg => 
-        doSegmentsIntersect(
-            {x: startStation.x, y: startStation.y}, 
-            {x: endStation.x, y: endStation.y}, 
-            seg.from, 
-            seg.to
-        )
-    );
-    if (hasIntersection) {
-        alert("HIBA: A vonalak nem keresztezhetik egymást a nyílt pályán!");
-        drawGame();
-        return;
+    const vonalId = jatekAllapot.vonalSorrend[jatekAllapot.aktualisVonalIndex];
+    jatekAllapot.megrajzoltSzakaszok.push({ line: vonalId, from: {x:kezdo.x,y:kezdo.y}, to: {x:veg.x,y:veg.y} });
+    
+    pontozasFrissitese(kezdo, veg);
+
+    const elsoSzakaszE = jatekAllapot.megrajzoltSzakaszok.filter(s => s.line === vonalId).length === 1;
+    if (!elsoSzakaszE) {
+        jatekAllapot.aktualisVonalVegpontok = jatekAllapot.aktualisVonalVegpontok.filter(p => p.x!==kezdo.x || p.y!==kezdo.y);
+    }
+    jatekAllapot.aktualisVonalVegpontok.push({ x: veg.x, y: veg.y });
+
+    jatekRajzolasa();
+    kartyaHuzasa();
+}
+
+function pontozasFrissitese(kezdo, veg) {
+    if (dunaAtkelesEllenorzes(kezdo, veg)) {
+        jatekAllapot.aktualisForduloStatisztika.dunaAtkelesek++;
     }
 
-    // --- SIKERES LÉPÉS! ---
-
-    const currentLineId = gameState.lineOrder[gameState.currentLineIndex];
+    keruletStatisztikaHozzaadasa(veg);
     
-    gameState.drawnSegments.push({ 
-        line: currentLineId, 
-        from: { x: startStation.x, y: startStation.y }, 
-        to: { x: endStation.x, y: endStation.y } 
+    if (veg.train) {
+        jatekAllapot.pontszamok.vonatIndex++;
+        vonatCsuszkaFrissitese();
+    }
+    feluletFrissitese();
+}
+
+function keruletStatisztikaHozzaadasa(allomas) {
+    const kerulet = allomas.district;
+    if (kerulet) {
+        jatekAllapot.aktualisForduloStatisztika.keruletek[kerulet] = (jatekAllapot.aktualisForduloStatisztika.keruletek[kerulet] || 0) + 1;
+    }
+}
+
+function szakaszPontjainakLekerese(p1, p2) {
+    const pontok = [];
+    const dx = Math.abs(p2.x - p1.x);
+    const dy = Math.abs(p2.y - p1.y);
+    const lepesek = Math.max(dx, dy);
+    
+    const lepesX = (p2.x - p1.x) / lepesek;
+    const lepesY = (p2.y - p1.y) / lepesek;
+    
+    for (let i = 0; i <= lepesek; i++) {
+        pontok.push({
+            x: Math.round(p1.x + i * lepesX),
+            y: Math.round(p1.y + i * lepesY)
+        });
+    }
+    return pontok;
+}
+
+function dunaAtkelesEllenorzes(p1, p2) {
+    
+    const ccw = (a, b, c) => (b.x-a.x)*(c.y-a.y) - (c.x-a.x)*(b.y-a.y);
+    
+    return DUNA_SZAKASZOK.some(dunaSzakasz => {
+        const p3 = dunaSzakasz.p1; const p4 = dunaSzakasz.p2;
+        const d1 = ccw(p3, p4, p1), d2 = ccw(p3, p4, p2);
+        const d3 = ccw(p1, p2, p3), d4 = ccw(p1, p2, p4);
+        return (((d1>0 && d2<0)||(d1<0 && d2>0)) && ((d3>0 && d4<0)||(d3<0 && d4>0)));
     });
-    
-    const segmentsForThisLine = gameState.drawnSegments.filter(s => s.line === currentLineId);
-    const isFirstSegment = segmentsForThisLine.length === 1;
-
-    if (!isFirstSegment) {
-        gameState.currentLineEndpoints = gameState.currentLineEndpoints.filter(
-            p => p.x !== startStation.x || p.y !== startStation.y
-        );
-    }
-
-    gameState.currentLineEndpoints.push({ x: endStation.x, y: endStation.y });
-
-    drawGame();
-    drawCard();
 }
 
-
-// --- 8. LÉPÉS: SEGÉDFÜGGVÉNYEK ---
-
-function getStationAt(x, y) {
-    return gameState.stations.find(station => station.x === x && station.y === y);
+function allomasLekerese(x, y) { return jatekAllapot.allomasok.find(s => s.x===x && s.y===y); }
+function vonalSzinLekerese(id) { return jatekAllapot.vonalak.find(l => l.id===id)?.color || "#000"; }
+function idozitoInditasa() { setInterval(() => {
+    const s = Math.floor((Date.now()-jatekAllapot.kezdesIdo)/1000);
+    idozitoKijelzo.textContent = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+}, 1000); }
+function tombKeverese(tomb) { for(let i=tomb.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[tomb[i],tomb[j]]=[tomb[j],tomb[i]];} return tomb; }
+function feluletFrissitese() {
+    vonatPontKijelzo.textContent = VONAT_PONTOK[Math.min(jatekAllapot.pontszamok.vonatIndex, VONAT_PONTOK.length-1)];
+    osszPontKijelzo.textContent = jatekAllapot.pontszamok.osszesen;
+}
+function vonatCsuszkaFrissitese() {
+    vonatPontCsuszka.innerHTML = "";
+    VONAT_PONTOK.forEach((pont, index) => {
+        const potty = document.createElement("div");
+        potty.className = "train-dot";
+        potty.style.width = "20px"; potty.style.height = "20px";
+        potty.style.borderRadius = "50%";
+        potty.style.display = "inline-flex"; potty.style.alignItems = "center"; potty.style.justifyContent = "center";
+        potty.style.fontSize = "10px"; potty.style.color = "white";
+        potty.style.marginRight = "2px";
+        potty.innerText = pont;
+        potty.style.backgroundColor = (index <= jatekAllapot.pontszamok.vonatIndex) ? "#0078D7" : "#ccc";
+        vonatPontCsuszka.appendChild(potty);
+    });
+}
+function forduloSorrendKirajzolasa() {
+    forduloSorrendKijelzo.innerHTML = "";
+    jatekAllapot.vonalSorrend.forEach((vonalId, idx) => {
+        const vonal = jatekAllapot.vonalak.find(l => l.id === vonalId);
+        const potty = document.createElement("div");
+        potty.className = "turn-icon";
+        potty.style.backgroundColor = vonal.color;
+        if (idx === jatekAllapot.aktualisVonalIndex) {
+            potty.style.border = "3px solid black";
+            potty.style.transform = "scale(1.2)";
+        }
+        forduloSorrendKijelzo.appendChild(potty);
+    });
 }
 
-function getLineColor(lineId) {
-    const line = gameState.lines.find(l => l.id === lineId);
-    return line ? line.color : "#000";
-}
-
-// Matematikai segédfüggvény a metszésvizsgálathoz (CCW algoritmus)
-function ccw(a, b, c) {
-    return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
-}
-
-function doSegmentsIntersect(p1, p2, p3, p4) {
-    // p1-p2 az új szakasz, p3-p4 egy régi szakasz
-    
-    // Ha van közös végpontjuk, az NEM hiba (állomáson találkoznak), kivéve ha ugyanaz a vonal (párhuzamos), de azt már szűrtük.
-    if ((p1.x === p3.x && p1.y === p3.y) || (p1.x === p4.x && p1.y === p4.y) ||
-        (p2.x === p3.x && p2.y === p3.y) || (p2.x === p4.x && p2.y === p4.y)) {
-        return false;
-    }
-
-    const d1 = ccw(p3, p4, p1);
-    const d2 = ccw(p3, p4, p2);
-    const d3 = ccw(p1, p2, p3);
-    const d4 = ccw(p1, p2, p4);
-
-    // Ha mindkét szorzás negatív, akkor a szakaszok "keresztben" vannak egymáshoz képest
-    // Ez a "szigorú" metszés esete (valódi X alak)
-    if (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) &&
-        ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0))) {
-        return true;
-    }
-
-    return false;
-}
-
-function startTimer() {
-    setInterval(() => {
-        const secondsElapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
-        const minutes = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
-        const seconds = (secondsElapsed % 60).toString().padStart(2, '0');
-        timerDisplay.textContent = `${minutes}:${seconds}`;
-    }, 1000);
-}
-
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-initializeGame();
+jatekInicializalasa();
