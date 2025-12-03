@@ -1,44 +1,64 @@
+package farm.crop;
+
 public class Crop {
 
     private final CropType type;
-    private int waterAmount;
+    private int waterLevel;
     private int growthLevel;
     private int dryDays;
+    private boolean isCropDead;
 
     public Crop(CropType type) {
         if (type == null) {
             throw new IllegalArgumentException("CropType cannot be null");
         }
         this.type = type;
-        this.waterAmount = 0;
+        this.waterLevel = 0;
         this.growthLevel = 0;
         this.dryDays = 0;
+        this.isCropDead = false;
     }
 
-    public boolean isDead() {
-        return dryDays > type.getMaxDryDays();
+    public boolean isCropDead() {
+        return isCropDead;
+    }
+
+    public boolean getIsCropDead() {
+        return isCropDead;
+    }
+
+    public int getWaterLevel() {
+        return waterLevel;
+    }
+
+    public int getGrowthLevel() {
+        return growthLevel;
     }
 
     public void water() {
-        if (isDead()) {
+        if (getIsCropDead()) {
             return;
         }
 
-        this.waterAmount += 2;
+        this.waterLevel += 2;
         
-        if (this.waterAmount > 10) {
-            this.waterAmount = 10;
+        if (this.waterLevel > 10) {
+            this.waterLevel = 10;
         }
 
         this.dryDays = 0;
     }
 
     public void simulateDay() {
-        if (waterAmount > 0) {
+        if (waterLevel > 0) {
             this.growthLevel += type.getGrowthRate();
-            this.waterAmount--;
+            this.waterLevel--;
         } else {
             this.dryDays++;
+        }
+        
+        if (dryDays > type.getMaxDryDays()) {
+            this.isCropDead = true;
         }
     }
 
@@ -47,10 +67,11 @@ public class Crop {
     }
 
     public boolean harvest() {
-        if (isMature() && !isDead()) {
-            this.waterAmount = 0;
+        if (isMature() && !getIsCropDead()) {
+            this.waterLevel = 0;
             this.growthLevel = 0;
             this.dryDays = 0;
+            this.isCropDead = false;
             return true;
         }
         return false;
@@ -58,7 +79,7 @@ public class Crop {
 
     @Override
     public String toString() {
-        if (isDead()) {
+        if (getIsCropDead()) {
             return "D";
         }
         switch (type) {
@@ -69,6 +90,7 @@ public class Crop {
         }
     }
     
-    public int getWaterAmount() { return waterAmount; }
+    // Régi getterek kompatibilitás miatt
+    public int getWaterAmount() { return waterLevel; }
     public CropType getType() { return type; }
 }

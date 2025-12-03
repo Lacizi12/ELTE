@@ -1,3 +1,7 @@
+package farm.field;
+
+import farm.crop.Crop;
+
 public class Plot {
 
     private Crop crop;
@@ -24,7 +28,7 @@ public class Plot {
 
     public boolean hasDeadCrop() {
         if (!isEmpty()) {
-            return crop.isDead();
+            return crop.getIsCropDead();
         }
         return false;
     }

@@ -1,0 +1,29 @@
+{
+    "6752b5fcbed19": {
+        "username": "q",
+        "password": "$2y$10$PloVKummdGTCoRQBeW5DeuNZMRYfUVQJXVqr8wQB3T3Xh4w84sVkC",
+        "fullname": "Q Q",
+        "roles": [
+            "user"
+        ],
+        "id": "6752b5fcbed19"
+    },
+    "692992870e8b3": {
+        "username": "x",
+        "password": "$2y$12$2Ry8j9bZop3VyXW\/WmNlieWtofcIaVAjpKZrTLJN2Fh5PEXxbElmm",
+        "fullname": "x",
+        "roles": [
+            "user"
+        ],
+        "id": "692992870e8b3"
+    },
+    "6929a0b8cfec6": {
+        "username": "a",
+        "password": "$2y$12$iKcs5fypZJBhvW2jOzohnuqq33ysRnmZXcGwsx23R2zaRqOycOfxS",
+        "fullname": "a",
+        "roles": [
+            "user"
+        ],
+        "id": "6929a0b8cfec6"
+    }
+}

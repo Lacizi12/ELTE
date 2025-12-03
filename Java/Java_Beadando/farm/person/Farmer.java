@@ -1,11 +1,16 @@
+package farm.person;
+
 import java.util.ArrayList;
-import java.util.List;
+import farm.crop.Crop;
+import farm.crop.CropType;
+import farm.field.Farm;
+import farm.field.Plot;
 
 public class Farmer {
 
-    private String name;
-    private Farm farm;
-    private List<Crop> harvestedCrops;
+    private final String name;
+    private final Farm farm;
+    private final ArrayList<Crop> harvestedCrops;
 
     public Farmer(String name, Farm farm) {
         if (name == null || name.isEmpty() || farm == null) {
@@ -14,6 +19,10 @@ public class Farmer {
         this.name = name;
         this.farm = farm;
         this.harvestedCrops = new ArrayList<>();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void plantCrop(int x, int y, CropType type) {
@@ -37,7 +46,7 @@ public class Farmer {
                 
                 if (!plot.isEmpty()) {
                     Crop crop = plot.getCrop();
-                    if (crop.getType() == type && !crop.isDead()) {
+                    if (crop.getType() == type && !crop.getIsCropDead()) {
                         crop.water();
                     }
                 }
@@ -45,7 +54,6 @@ public class Farmer {
         }
     }
 
-    // Segédfüggvény a kódismétlés elkerülésére
     private void harvestCropLogic(Plot plot) {
         if (!plot.isEmpty()) {
             Crop crop = plot.getCrop();
@@ -94,7 +102,7 @@ public class Farmer {
         }
     }
 
-    public List<Crop> getHarvestedCrops() {
+    public ArrayList<Crop> getHarvestedCrops() {
         return harvestedCrops;
     }
 }
